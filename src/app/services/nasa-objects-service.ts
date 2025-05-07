@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { INasaObject } from '../models/nasa-object';
 import { LoadResult } from '../models/load-result';
 import { DataSourceLoadOptions } from '../models/data-source-load-options';
 
@@ -12,15 +11,14 @@ export class NasaObjectsService {
 private apiUrl = 'http://localhost:5174/NasaObjects';
 
 constructor(private http: HttpClient) { }
+    andMark: string = `"and"`;
 
     getNasaObjects(loadOptions: DataSourceLoadOptions): Observable<LoadResult> {
-        const options = { params: { loadOptions: JSON.stringify(loadOptions) } };
-        let params = new HttpParams();
-
-       // Convert object keys and values to HttpParams
-        Object.keys(loadOptions).forEach(key => {
-            params = params.append(key, loadOptions.skip);
-        });
+        var filterString = JSON.stringify(loadOptions.filter);
+        if (filterString.includes(this.andMark)) {
+            filterString = filterString.replaceAll(`[${this.andMark}]`, `${this.andMark}`)
+        }
+        const options = { params: { skip: loadOptions.skip, take: loadOptions.take, requireTotalCount: loadOptions.requireTotalCount, filter: filterString, sort: JSON.stringify(loadOptions.sort) } };
 
         return this.http.get<LoadResult>(this.apiUrl, options);
     }

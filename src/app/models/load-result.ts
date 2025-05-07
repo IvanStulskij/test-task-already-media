@@ -1,4 +1,6 @@
+import { INasaObject } from "./nasa-object";
+
 export interface LoadResult {
-    data: object[],
+    data: INasaObject[],
     totalCount: number
 }
