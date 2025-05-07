@@ -70,8 +70,11 @@ export class NasaObjectsComponent implements OnInit {
 
     this.service.getNasaObjects(this.fullLoadOptions).subscribe(result => {
       this.beginYears = [...new Set(result.data.map(x => new Date(x.year).getFullYear()))].sort();
+      this.beginYears.unshift(0);
       this.endYears = [...new Set(result.data.map(x => new Date(x.year).getFullYear()))].sort();
+      this.endYears.unshift(0);
       this.classes = [...new Set(result.data.map(x => x.recclass))].sort();
+      this.classes.unshift("Select class")
     });
   }
 
@@ -91,6 +94,9 @@ export class NasaObjectsComponent implements OnInit {
 
   selectClass(event: MatSelectChange) : void {
     this.recclass = event.value;
+    if (event.value == "Select class") {
+      this.recclass = "";
+    }
     this.loadOptions.filter = this.loadOptions.filter.filter(x => x[0] != 'Recclass');
     this.getNasaObjects();
   }
@@ -105,6 +111,7 @@ export class NasaObjectsComponent implements OnInit {
     if (event.source.placeholder == "From") {
       this.beginYear = event.value;
       this.endYears = this.beginYears.filter(x => x > this.beginYear);
+      this.endYears.unshift(0);
       this.loadOptions.filter = this.loadOptions.filter.filter(x => x[0] != 'Year' && x[1] == '>');
     }
     else {
